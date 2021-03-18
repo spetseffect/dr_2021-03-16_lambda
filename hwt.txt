@@ -1,0 +1,167 @@
+//task1
+@FunctionalInterface
+public interface IDateDiffDays{
+	public Integer apply(Date date1,Date date2);
+}
+@FunctionalInterface
+public interface IDateDiffWeeks{
+	public Integer apply(Date date1,Date date2);
+}
+public class Main{
+	public static void main(String[] args){
+		Predicate<Integer> year=(y)->y%4==0;
+		System.out.println(year.test(2020));
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+		Date date1 = dateFormat.parse("09.01.1985");
+		Date date2 = dateFormat.parse("17.03.2021");
+		IDateDiffDays<Integer> ddd=(date1,date2)->{
+			long ms=date2.getTime()-date1.getTime();
+			return (int)(ms/1000/60/60/24);
+		};
+		System.out.println(ddd.apply(date1,date2));
+		
+		IDateDiffWeeks<Integer> ddw=(date1,date2)->{
+			long ms=date2.getTime()-date1.getTime();
+			return (int)(ms/1000/60/60/24/7);
+		};
+		System.out.println(ddw.apply(date1,date2));
+		
+		LocalDate date = LocalDate.now();
+		Supplier<String> wd=()->{
+			DayOfWeek dayOfWeek = date.getDayOfWeek();
+			return dayOfWeek.toString();
+		};
+		System.out.println(wd.get());
+	}
+}
+---------------------------
+//task2
+public class Fraction{
+	public int n;//numerator
+	public int d;//denominator
+	public Fraction(){}
+	public Fraction(int numerator,int denominator){
+		n=numerator;
+		d=denominator;
+	}
+	@Override
+	public void toString(){
+		return n+"/"+d;
+	}
+	public void Reduction(){
+		for(int i=2;i<=n&&i<=d;i++){
+			if(n%i==0 && d%i==0){
+				n/=i;
+				d/=i;
+				i=1;
+			}
+		}
+	}
+	public Fraction Invert(){
+		return new Fraction(d,n);
+	}
+}
+public class Main{
+	public static void main(String[] args){
+		BinaryOperator<Fraction> add=(a,b)->{
+			Fraction c=new Fraction();
+			if(a.denominator==b.denominator){
+				c.numerator=a.numerator+b.numerator;
+				c.denominator=a.denominator;
+			}else{
+				c.numerator=a.numerator*b.denominator+b.numerator*a.denominator;
+				c.denominator=a.denominator*b.denominator;
+			}
+			c.Reduction();
+			return c;
+		}
+		BinaryOperator<Fraction> subt=(a,b)->{
+			Fraction c=new Fraction();
+			if(a.denominator==b.denominator){
+				c.numerator=a.numerator-b.numerator;
+				c.denominator=a.denominator;
+			}else{
+				c.numerator=a.numerator*b.denominator-b.numerator*a.denominator;
+				c.denominator=a.denominator*b.denominator;
+			}
+			c.Reduction();
+			return c;
+		}
+		BinaryOperator<Fraction> mult=(a,b)->{
+			Fraction c=new Fraction();
+			c.numerator=a.numerator*b.numerator;
+			c.denominator=a.denominator*b.denominator;
+			c.Reduction();
+			return c;
+		}
+		BinaryOperator<Fraction> div=(a,b)->{
+			return mult.apply(a,b.Invert());
+		}
+		Fraction a = new Fraction(2,5);
+		Fraction b = new Fraction(3,7);
+		System.out.println(a+"+"+b+"="+add.apply(a,b));
+		System.out.println(a+"-"+b+"="+subt.apply(a,b));
+		System.out.println(a+"*"+b+"="+mult.apply(a,b));
+		System.out.println(a+"/"+b+"="+div.apply(a,b));
+	}
+}
+---------------------------
+//task3
+@FunctionalInterface
+public interface IMinMax<T>{
+	public T search(T ... args);
+}
+public class MinMax<T>{
+	public static<T extends Number> T searchMin(T ... args) throws Exception{
+		if(args.length>0){
+			T result=args[0];
+			for(int i=1;i<args.length;i++){
+				if(result>args[i]) result=args[i];
+			}
+			return result;
+		}else return throw new Exception("Error. Array is empty.");
+	}
+	public static<T extends Number> T searchMax(T ... args) throws Exception{
+		if(args.length>0){
+			T result=args[0];
+			for(int i=1;i<args.length;i++){
+				if(result<args[i]) result=args[i];
+			}
+			return result;
+		}else return throw new Exception("Error. Array is empty.");
+	}
+}
+public class Main{
+	public static void main(String[] args){
+		IMinMax<Integer> min=MinMax<Integer>::searchMin;
+		IMinMax<Integer> max=MinMax<Integer>::searchMax;
+		System.out.println(min.search(1,2,3,4,5));
+		System.out.println(max.search(1,2,3,4,5));
+	}
+
+}
+---------------------------
+//task4
+public class Main{
+	public static <T extends Number> T sum(T[] args,Predicate<T> pred){
+		T result=0;
+		for(T i:args)
+			if(pred.test(i)) result+=i;
+		return result;
+	}
+	public static void main(String[] args){
+		Integer eq=4;
+		Integer a=-5,b=5;
+		Predicate<Integer> isEquals=(x)->eq.equal(x);
+		Predicate<Integer> interval=(x)->x<a&&x>b;
+		Predicate<Integer> moreZero=(x)->x>0;
+		Predicate<Integer> lessZero=(x)->x<0;
+		var arr=new Integer[]{7,-5,8,-9,2,-1,5,-7,8,-1,3,-8,9,0,-8,4,-6,5,-7,8,-6,2,-3,7,-4,8,-8,1,-7,8,-1,6,-7,6,0};
+		System.out.println(sum(arr,isEquals));
+		System.out.println(sum(arr,interval));
+		System.out.println(sum(arr,moreZero));
+		System.out.println(sum(arr,lessZero));
+	}
+}
+---------------------------

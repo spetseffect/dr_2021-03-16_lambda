@@ -40,9 +40,9 @@ public class Main{
         };
         Fraction a = new Fraction(2,5);
         Fraction b = new Fraction(3,7);
-        System.out.println(a+"+"+b+"="+add.apply(a,b));
-        System.out.println(a+"-"+b+"="+subt.apply(a,b));
-        System.out.println(a+"*"+b+"="+mult.apply(a,b));
-        System.out.println(a+"/"+b+"="+div.apply(a,b));
+        System.out.println(a+" + "+b+" = "+add.apply(a,b));
+        System.out.println(a+" - "+b+" = "+subt.apply(a,b));
+        System.out.println(a+" * "+b+" = "+mult.apply(a,b));
+        System.out.println(a+" / "+b+" = "+div.apply(a,b));
     }
 }
